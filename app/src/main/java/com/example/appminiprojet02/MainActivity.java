@@ -18,6 +18,8 @@ import com.example.appminiprojet02.databinding.ActivityMainBinding;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.Random;
+
 public class MainActivity extends AppCompatActivity {
 
     ActivityMainBinding binding ;
@@ -30,9 +32,11 @@ public class MainActivity extends AppCompatActivity {
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         root = binding.getRoot();
         setContentView(root);
+        Random random = new Random();
+        int quoteNumber = random.nextInt(76)+25;
 
         RequestQueue queue = Volley.newRequestQueue(this);
-        String url = "https://dummyjson.com/quotes/random";
+        String url = "https://dummyjson.com/quotes/"+quoteNumber;
 
         JsonObjectRequest jsonObject = new JsonObjectRequest(url, new Response.Listener<JSONObject>() {
             @Override
