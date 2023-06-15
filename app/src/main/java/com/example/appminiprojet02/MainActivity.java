@@ -2,9 +2,11 @@ package com.example.appminiprojet02;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.CompoundButton;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -22,6 +24,7 @@ public class MainActivity extends AppCompatActivity {
 
     ActivityMainBinding binding ;
     View root ;
+    SharedPreferences sharedPreferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,7 +33,40 @@ public class MainActivity extends AppCompatActivity {
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         root = binding.getRoot();
         setContentView(root);
+        sharedPreferences = getSharedPreferences("favorite-quotes",MODE_PRIVATE);
+        String quote = sharedPreferences.getString("quote", null);
+        if(quote == null){
+            loadQuote();
+        }else {
+            String author = sharedPreferences.getString("author",null);
+            binding.tvQuoteMain.setText(quote);
+            binding.tvAuthorMain.setText(author);
+            binding.tbPinUnpinMain.setChecked(true);
+        }
 
+        binding.tbPinUnpinMain.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                if(isChecked){
+                    editor.putString("quote", binding.tvQuoteMain.getText().toString());
+                    editor.putString("author", binding.tvAuthorMain.getText().toString());
+                }else{
+                    editor.remove("quote");
+                    editor.remove("author");
+                }
+                editor.apply();
+            }
+        });
+
+
+
+
+    }
+
+
+
+    private void loadQuote(){
         RequestQueue queue = Volley.newRequestQueue(this);
         String url = "https://dummyjson.com/quotes/random";
 
@@ -48,12 +84,10 @@ public class MainActivity extends AppCompatActivity {
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Log.e("TAG", error.getMessage());
+                error.printStackTrace();
             }
         });
 
         queue.add(jsonObject);
-
-
     }
 }
