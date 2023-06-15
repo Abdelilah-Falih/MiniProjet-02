@@ -3,10 +3,14 @@ package com.example.appminiprojet02;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.CompoundButton;
+import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -20,12 +24,16 @@ import com.example.appminiprojet02.databinding.ActivityMainBinding;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+
 public class MainActivity extends AppCompatActivity {
 
     ActivityMainBinding binding ;
     View root ;
     SharedPreferences sharedPreferences;
-
+    ArrayList<String> colors_label = new ArrayList<>();
+    String[] colors_values = {"#FFFFFFFF","#FFA07A", "#DDA0DD", "#98FB98", "#6495ED"};
+    ArrayAdapter<String> adapter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -33,7 +41,42 @@ public class MainActivity extends AppCompatActivity {
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         root = binding.getRoot();
         setContentView(root);
+
         sharedPreferences = getSharedPreferences("favorite-quotes",MODE_PRIVATE);
+
+        colors_label.add("Default");
+        colors_label.add("LightSalmon");
+        colors_label.add("Plum");
+        colors_label.add("PaleGreen");
+        colors_label.add("CornflowerBlue");
+
+        adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, colors_label);
+        binding.spinnerMain.setAdapter(adapter);
+
+        int bgColorIndex = sharedPreferences.getInt("bg-color-index", 0);
+        if(bgColorIndex != 0){
+            binding.getRoot().setBackgroundColor(Color.parseColor(colors_values[bgColorIndex]));
+            binding.spinnerMain.setSelection(bgColorIndex, true);
+        }
+
+
+        binding.spinnerMain.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                    String backgroundColor = colors_values[position];
+                    binding.getRoot().setBackgroundColor(Color.parseColor(backgroundColor));
+                    SharedPreferences.Editor editor = sharedPreferences.edit();
+                    editor.putInt("bg-color-index", position);
+                    editor.apply();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
+
         String quote = sharedPreferences.getString("quote", null);
         if(quote == null){
             loadQuote();
@@ -58,6 +101,8 @@ public class MainActivity extends AppCompatActivity {
                 editor.apply();
             }
         });
+
+
 
 
 
