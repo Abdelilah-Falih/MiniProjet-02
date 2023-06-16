@@ -16,6 +16,7 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.appminiprojet02.Database.FavoutiteQuotesDatabase.FavouriteQuotesDB;
+import com.example.appminiprojet02.Models.Quote;
 import com.example.appminiprojet02.databinding.ActivityMainBinding;
 
 import org.json.JSONException;
@@ -26,6 +27,10 @@ public class MainActivity extends AppCompatActivity {
     ActivityMainBinding binding ;
     View root ;
     SharedPreferences sharedPreferences;
+    FavouriteQuotesDB database;
+
+    boolean isLiked ;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,11 +40,15 @@ public class MainActivity extends AppCompatActivity {
         root = binding.getRoot();
         setContentView(root);
         sharedPreferences = getSharedPreferences("favorite-quotes",MODE_PRIVATE);
-        String quote = sharedPreferences.getString("quote", null);
-        if(quote == null){
+        database = new FavouriteQuotesDB(this);
+
+        int quote_id = sharedPreferences.getInt("_id", -1);
+        if(quote_id == -1){
             loadQuote();
         }else {
+            String quote = sharedPreferences.getString("quote",null);
             String author = sharedPreferences.getString("author",null);
+            binding.tvIdQuote.setText("#"+quote_id);
             binding.tvQuoteMain.setText(quote);
             binding.tvAuthorMain.setText(author);
             binding.tbPinUnpinMain.setChecked(true);
@@ -49,27 +58,37 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 SharedPreferences.Editor editor = sharedPreferences.edit();
+                int id = Integer.parseInt(binding.tvIdQuote.getText().toString().substring(1));
+                String quote = binding.tvQuoteMain.getText().toString();
+                String author = binding.tvAuthorMain.getText().toString();
                 if(isChecked){
-                    editor.putString("quote", binding.tvQuoteMain.getText().toString());
-                    editor.putString("author", binding.tvAuthorMain.getText().toString());
+                    editor.putInt("_id", id);
+                    editor.putString("quote", quote);
+                    editor.putString("author", author);
                 }else{
-                    editor.remove("quote");
-                    editor.remove("author");
+                    editor.clear();
                 }
                 editor.apply();
             }
         });
 
+        binding.ibLikeDeslike.setOnClickListener(v->{
+            int id = Integer.parseInt(binding.tvIdQuote.getText().toString().substring(1));
+            if(isLiked) {
+                binding.ibLikeDeslike.setImageResource(R.drawable.ic_deslike);
+                database.deleteQuote(id);
+            }
+            else {
+                String quote_text = binding.tvQuoteMain.getText().toString();
+                String quote_author = binding.tvAuthorMain.getText().toString();
+                binding.ibLikeDeslike.setImageResource(R.drawable.ic_like);
+                database.addQuote(new Quote(id, quote_text, quote_author));
+            }
+            isLiked = !isLiked;
+        });
 
-        /*database tests ->
-        FavouriteQuotesDB database = new FavouriteQuotesDB(this);
-//        database.addFavouriteQuote(1, "quote 01", "author 01");
-//        database.addFavouriteQuote(2, "quote 02", "author 02");
-//        database.addFavouriteQuote(3, "quote 03", "author 03");
-        database.getQuotes();
-        database.deleteQuote(1);
-        database.getQuotes();
-        */
+
+
 
     }
 
@@ -83,6 +102,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onResponse(JSONObject response) {
                 try {
+                    int id =response.getInt("id");
+                    binding.tvIdQuote.setText("#"+id);
                     binding.tvQuoteMain.setText(response.getString("quote"));
                     binding.tvAuthorMain.setText(response.getString("author"));
                 } catch (JSONException e) {

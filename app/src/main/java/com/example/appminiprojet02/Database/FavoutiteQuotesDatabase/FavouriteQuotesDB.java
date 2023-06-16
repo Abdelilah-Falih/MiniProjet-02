@@ -10,6 +10,9 @@ import android.util.Log;
 import androidx.annotation.Nullable;
 
 import com.example.appminiprojet02.Database.FavoutiteQuotesTable.FavouriteQuotes;
+import com.example.appminiprojet02.Models.Quote;
+
+import java.util.ArrayList;
 
 public class FavouriteQuotesDB extends SQLiteOpenHelper {
 
@@ -32,7 +35,7 @@ public class FavouriteQuotesDB extends SQLiteOpenHelper {
         db.execSQL(DROP_TABLE);
     }
 
-    public void addFavouriteQuote(int _id, String quote , String author){
+    private void addFavouriteQuote(int _id, String quote , String author){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues cv = new ContentValues();
         cv.put("_id", _id);
@@ -41,14 +44,19 @@ public class FavouriteQuotesDB extends SQLiteOpenHelper {
         db.insert(FavouriteQuotes.Info.TABLE_NAME, null, cv);
     }
 
+    public void addQuote(Quote quote){
+        addFavouriteQuote(quote.getId(), quote.getQuote(), quote.getAuthor());
+    }
+
     public void deleteQuote(int _id){
         SQLiteDatabase db = getWritableDatabase();
         db.delete(FavouriteQuotes.Info.TABLE_NAME, FavouriteQuotes.Info.COLUMN_ID+" LIKE ? ", new String[]{Integer.toString(_id)});
 
     }
 
-    public void getQuotes(){
+    public ArrayList<Quote> getAllQuotes(){
         SQLiteDatabase db = getReadableDatabase();
+        ArrayList<Quote> quotes = new ArrayList<>();
         String[] projection = {
           FavouriteQuotes.Info.COLUMN_ID,
           FavouriteQuotes.Info.COLUMN_QUOTE,
@@ -64,12 +72,19 @@ public class FavouriteQuotesDB extends SQLiteOpenHelper {
 
 
             while (cursor.moveToNext()) {
-                Log.e("sql_cursor", String.format("%d  -  %s  -  %s",
-                        cursor.getInt(0),
-                        cursor.getString(1),
-                        cursor.getString(2)
-                ));
+                int quote_id;
+                String quote_text, quote_author;
+
+                quote_id = cursor.getInt(cursor.getColumnIndexOrThrow(FavouriteQuotes.Info.COLUMN_ID));
+                quote_text = cursor.getString(cursor.getColumnIndexOrThrow(FavouriteQuotes.Info.COLUMN_QUOTE));
+                quote_author = cursor.getString(cursor.getColumnIndexOrThrow(FavouriteQuotes.Info.COLUMN_AUTHOR));
+
+                quotes.add(new Quote(quote_id, quote_text, quote_author));
+                Log.d("TAG", String.format("%d  -  %s  -  %s", quote_id, quote_text, quote_author));
             }
         }
+        return quotes;
     }
+
+
 }
