@@ -15,6 +15,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.example.appminiprojet02.Database.FavoutiteQuotesDatabase.FavouriteQuotesDB;
 import com.example.appminiprojet02.databinding.ActivityMainBinding;
 
 import org.json.JSONException;
@@ -60,7 +61,15 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
-
+        /*database tests ->
+        FavouriteQuotesDB database = new FavouriteQuotesDB(this);
+//        database.addFavouriteQuote(1, "quote 01", "author 01");
+//        database.addFavouriteQuote(2, "quote 02", "author 02");
+//        database.addFavouriteQuote(3, "quote 03", "author 03");
+        database.getQuotes();
+        database.deleteQuote(1);
+        database.getQuotes();
+        */
 
     }
 
