@@ -22,6 +22,8 @@ import com.example.appminiprojet02.databinding.ActivityMainBinding;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.Random;
+
 public class MainActivity extends AppCompatActivity {
 
     ActivityMainBinding binding ;
@@ -52,6 +54,7 @@ public class MainActivity extends AppCompatActivity {
             binding.tvQuoteMain.setText(quote);
             binding.tvAuthorMain.setText(author);
             binding.tbPinUnpinMain.setChecked(true);
+            binding.ibLikeDeslike.setImageResource(R.drawable.ic_like);
         }
 
         binding.tbPinUnpinMain.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -65,26 +68,29 @@ public class MainActivity extends AppCompatActivity {
                     editor.putInt("_id", id);
                     editor.putString("quote", quote);
                     editor.putString("author", author);
+                    database.addQuote(new Quote(id,quote, author));
+                    isLiked = false;
                 }else{
                     editor.clear();
+                    database.deleteQuote(id);
+                    isLiked = true;
                 }
                 editor.apply();
+                changeImage();
             }
         });
 
         binding.ibLikeDeslike.setOnClickListener(v->{
             int id = Integer.parseInt(binding.tvIdQuote.getText().toString().substring(1));
             if(isLiked) {
-                binding.ibLikeDeslike.setImageResource(R.drawable.ic_deslike);
                 database.deleteQuote(id);
             }
             else {
                 String quote_text = binding.tvQuoteMain.getText().toString();
                 String quote_author = binding.tvAuthorMain.getText().toString();
-                binding.ibLikeDeslike.setImageResource(R.drawable.ic_like);
                 database.addQuote(new Quote(id, quote_text, quote_author));
             }
-            isLiked = !isLiked;
+            changeImage();
         });
 
 
@@ -92,11 +98,18 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    void changeImage(){
+        if(isLiked) binding.ibLikeDeslike.setImageResource(R.drawable.ic_deslike);
+        else binding.ibLikeDeslike.setImageResource(R.drawable.ic_like);
+        isLiked = !isLiked;
+    }
+
 
 
     private void loadQuote(){
         RequestQueue queue = Volley.newRequestQueue(this);
-        String url = "https://dummyjson.com/quotes/random";
+       int x =  new Random().nextInt(6)+95;
+        String url = "https://dummyjson.com/quotes/"+x;
 
         JsonObjectRequest jsonObject = new JsonObjectRequest(url, new Response.Listener<JSONObject>() {
             @Override
@@ -106,6 +119,8 @@ public class MainActivity extends AppCompatActivity {
                     binding.tvIdQuote.setText("#"+id);
                     binding.tvQuoteMain.setText(response.getString("quote"));
                     binding.tvAuthorMain.setText(response.getString("author"));
+                    isLiked = !database.isFavourite(id);
+                    changeImage();
                 } catch (JSONException e) {
                     throw new RuntimeException(e);
                 }

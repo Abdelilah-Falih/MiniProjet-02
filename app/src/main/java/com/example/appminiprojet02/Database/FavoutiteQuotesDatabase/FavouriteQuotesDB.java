@@ -87,4 +87,11 @@ public class FavouriteQuotesDB extends SQLiteOpenHelper {
     }
 
 
+    public boolean isFavourite(int id) {
+        ArrayList<Quote> quotes = getAllQuotes();
+        for (Quote quote: quotes){
+            if(quote.getId() == id) return true;
+        }
+        return false;
+    }
 }
