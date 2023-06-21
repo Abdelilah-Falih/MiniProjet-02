@@ -54,7 +54,8 @@ public class MainActivity extends AppCompatActivity {
             binding.tvQuoteMain.setText(quote);
             binding.tvAuthorMain.setText(author);
             binding.tbPinUnpinMain.setChecked(true);
-            binding.ibLikeDeslike.setImageResource(R.drawable.ic_like);
+            isLiked = !database.isFavourite(quote_id);
+            changeImage();
         }
 
         binding.tbPinUnpinMain.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -69,14 +70,12 @@ public class MainActivity extends AppCompatActivity {
                     editor.putString("quote", quote);
                     editor.putString("author", author);
                     database.addQuote(new Quote(id,quote, author));
-                    isLiked = false;
+                    isLiked = true;
+                    binding.ibLikeDeslike.setImageResource(R.drawable.ic_like);
                 }else{
                     editor.clear();
-                    database.deleteQuote(id);
-                    isLiked = true;
                 }
                 editor.apply();
-                changeImage();
             }
         });
 
@@ -84,6 +83,9 @@ public class MainActivity extends AppCompatActivity {
             int id = Integer.parseInt(binding.tvIdQuote.getText().toString().substring(1));
             if(isLiked) {
                 database.deleteQuote(id);
+                if(binding.tbPinUnpinMain.isChecked()){
+                    binding.tbPinUnpinMain.setChecked(false);
+                }
             }
             else {
                 String quote_text = binding.tvQuoteMain.getText().toString();
@@ -108,7 +110,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void loadQuote(){
         RequestQueue queue = Volley.newRequestQueue(this);
-       int x =  new Random().nextInt(6)+95;
+       int x =  new Random().nextInt(4)+95;
         String url = "https://dummyjson.com/quotes/"+x;
 
         JsonObjectRequest jsonObject = new JsonObjectRequest(url, new Response.Listener<JSONObject>() {
