@@ -79,6 +79,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+
         binding.ibLikeDeslike.setOnClickListener(v->{
             int id = Integer.parseInt(binding.tvIdQuote.getText().toString().substring(1));
             if(isLiked) {
