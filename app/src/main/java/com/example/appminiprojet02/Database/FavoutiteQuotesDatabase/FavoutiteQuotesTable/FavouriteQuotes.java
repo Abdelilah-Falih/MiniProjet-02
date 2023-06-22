@@ -1,4 +1,4 @@
-package com.example.appminiprojet02.Database.FavoutiteQuotesTable;
+package com.example.appminiprojet02.Database.FavoutiteQuotesDatabase.FavoutiteQuotesTable;
 
 public class FavouriteQuotes {
     public static class Info {

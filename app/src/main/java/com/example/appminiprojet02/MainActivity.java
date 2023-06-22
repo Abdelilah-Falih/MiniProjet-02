@@ -6,7 +6,10 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.CompoundButton;
+import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -16,12 +19,15 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.appminiprojet02.Database.FavoutiteQuotesDatabase.FavouriteQuotesDB;
+import com.example.appminiprojet02.Database.SettingsDatabase.Colors_settings;
+import com.example.appminiprojet02.Models.Color;
 import com.example.appminiprojet02.Models.Quote;
 import com.example.appminiprojet02.databinding.ActivityMainBinding;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
@@ -31,7 +37,11 @@ public class MainActivity extends AppCompatActivity {
     SharedPreferences sharedPreferences;
     FavouriteQuotesDB database;
 
+    Colors_settings settings;
+    Color color;
+
     boolean isLiked ;
+    int id = 0;
 
 
     @Override
@@ -43,6 +53,72 @@ public class MainActivity extends AppCompatActivity {
         setContentView(root);
         sharedPreferences = getSharedPreferences("favorite-quotes",MODE_PRIVATE);
         database = new FavouriteQuotesDB(this);
+
+        settings = new Colors_settings(this);
+
+        ArrayList<String > arrayColors  = new ArrayList<>();
+
+        arrayColors.add("Default");
+        arrayColors.add("LightSalmon");
+        arrayColors.add("Plum");
+        arrayColors.add("PaleGreen");
+        arrayColors.add("CornflowerBlue");
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, arrayColors);
+
+        binding.spinnerSettings.setAdapter(adapter);
+
+
+
+        binding.spinnerSettings.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                switch (position){
+                    case 0:
+                        color = new Color(0, "Default", "#FFFFFF");
+                        settings.addSettingsColor(color);
+                        binding.getRoot().setBackgroundColor(android.graphics.Color.parseColor("#FFFFFF"));
+                        break;
+                    case 1:
+                        color = new Color(1, "LightSalmon", "#FFA07A");
+                        settings.addSettingsColor(color);
+                        binding.getRoot().setBackgroundColor(android.graphics.Color.parseColor("#FFA07A"));
+                        break;
+                    case 2:
+                        color = new Color(2, "Plum", "#DDA0DD");
+                        settings.addSettingsColor(color);
+                        binding.getRoot().setBackgroundColor(android.graphics.Color.parseColor("#DDA0DD"));
+                        break;
+                    case 3:
+                        color = new Color(3, "PaleGreen", "#98FB98");
+                        settings.addSettingsColor(color);
+                        binding.getRoot().setBackgroundColor(android.graphics.Color.parseColor("#98FB98"));
+                        break;
+                    case 4:
+                        color = new Color(4, "CornflowerBlue", "#6495ED");
+                        settings.addSettingsColor(color);
+                        binding.getRoot().setBackgroundColor(android.graphics.Color.parseColor("#6495ED"));
+                        break;
+                }
+            }
+
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
+        if (settings.getColorSettings() != null){
+            int id = settings.getColorSettings().getId();
+            binding.spinnerSettings.setSelection(id);
+            binding.getRoot().setBackgroundColor(android.graphics.Color.parseColor(settings.getColorSettings().getValue()));
+        }
+
+
+
+
 
         int quote_id = sharedPreferences.getInt("_id", -1);
         if(quote_id == -1){

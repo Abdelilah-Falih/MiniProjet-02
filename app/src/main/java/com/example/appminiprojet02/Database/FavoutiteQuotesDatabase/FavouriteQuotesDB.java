@@ -9,7 +9,7 @@ import android.util.Log;
 
 import androidx.annotation.Nullable;
 
-import com.example.appminiprojet02.Database.FavoutiteQuotesTable.FavouriteQuotes;
+import com.example.appminiprojet02.Database.FavoutiteQuotesDatabase.FavoutiteQuotesTable.FavouriteQuotes;
 import com.example.appminiprojet02.Models.Quote;
 
 import java.util.ArrayList;
