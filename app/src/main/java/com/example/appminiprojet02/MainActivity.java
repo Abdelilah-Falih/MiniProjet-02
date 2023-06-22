@@ -2,6 +2,7 @@ package com.example.appminiprojet02;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
@@ -57,6 +58,10 @@ public class MainActivity extends AppCompatActivity {
             isLiked = !database.isFavourite(quote_id);
             changeImage();
         }
+
+        binding.btnShowFavouriteQuotes.setOnClickListener(v->{
+            startActivity(new Intent(this, AllFavouritesQuotes.class));
+        });
 
         binding.tbPinUnpinMain.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
