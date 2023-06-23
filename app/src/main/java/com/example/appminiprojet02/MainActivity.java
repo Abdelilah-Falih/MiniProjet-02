@@ -9,19 +9,16 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.ContextMenu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.Toast;
 
-import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.appminiprojet02.Database.FavoutiteQuotesDatabase.FavouriteQuotesDB;
 import com.example.appminiprojet02.Models.Quote;
@@ -40,6 +37,7 @@ public class MainActivity extends AppCompatActivity {
     FavouriteQuotesDB database;
     String[] colors_names;
     String[] colors_codes;
+    int whichColorPosition;
 
     boolean isLiked ;
 
@@ -122,6 +120,8 @@ public class MainActivity extends AppCompatActivity {
                     root.setBackgroundColor(Color.parseColor(colors_codes[which]));
                 }
             });
+            
+
 
             builder.show();
         });
@@ -171,6 +171,8 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onContextItemSelected(@NonNull MenuItem item) {
         root.setBackgroundColor(Color.parseColor(colors_codes[item.getGroupId()]));
+        item.setEnabled(false);
+        whichColorPosition = item.getGroupId();
         return super.onContextItemSelected(item);
     }
 
@@ -179,6 +181,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreateContextMenu(menu, v, menuInfo);
         menu.setHeaderTitle("chose a color");
         int id = 0;
+
         for (String color: colors_names) {
             menu.add(id, v.getId(), 0, color);
             id++;
