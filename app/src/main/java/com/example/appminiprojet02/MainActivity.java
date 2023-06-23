@@ -1,8 +1,10 @@
 package com.example.appminiprojet02;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
@@ -109,6 +111,19 @@ public class MainActivity extends AppCompatActivity {
                 database.addQuote(new Quote(id, quote_text, quote_author));
             }
             changeImage();
+        });
+
+        binding.ivChangeLayoutBg.setOnClickListener(v->{
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle("chose a color");
+            builder.setItems(new CharSequence[]{"Default", "LightSalmon", "Plum", "PaleGreen", "CornflowerBlue"}, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    root.setBackgroundColor(Color.parseColor(colors_codes[which]));
+                }
+            });
+
+            builder.show();
         });
 
 
