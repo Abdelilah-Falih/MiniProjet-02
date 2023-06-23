@@ -1,13 +1,18 @@
 package com.example.appminiprojet02;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.ContextMenu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.CompoundButton;
+import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -31,6 +36,8 @@ public class MainActivity extends AppCompatActivity {
     View root ;
     SharedPreferences sharedPreferences;
     FavouriteQuotesDB database;
+    String[] colors_names;
+    String[] colors_codes;
 
     boolean isLiked ;
 
@@ -44,6 +51,9 @@ public class MainActivity extends AppCompatActivity {
         setContentView(root);
         sharedPreferences = getSharedPreferences("favorite-quotes",MODE_PRIVATE);
         database = new FavouriteQuotesDB(this);
+
+        colors_names = getResources().getStringArray(R.array.colors_label);
+        colors_codes = getResources().getStringArray(R.array.colors_cods);
 
         int quote_id = sharedPreferences.getInt("_id", -1);
         if(quote_id == -1){
@@ -102,8 +112,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
-
-
+        registerForContextMenu(binding.ivChangeLayoutBg);
     }
 
     void changeImage(){
@@ -142,5 +151,23 @@ public class MainActivity extends AppCompatActivity {
         });
 
         queue.add(jsonObject);
+    }
+
+    @Override
+    public boolean onContextItemSelected(@NonNull MenuItem item) {
+        root.setBackgroundColor(Color.parseColor(colors_codes[item.getGroupId()]));
+        return super.onContextItemSelected(item);
+    }
+
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+        menu.setHeaderTitle("chose a color");
+        int id = 0;
+        for (String color: colors_names) {
+            menu.add(id, v.getId(), 0, color);
+            id++;
+        }
+
     }
 }
