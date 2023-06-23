@@ -117,7 +117,7 @@ public class MainActivity extends AppCompatActivity {
     private void loadQuote(){
         RequestQueue queue = Volley.newRequestQueue(this);
        int x =  new Random().nextInt(4)+95;
-        String url = "https://dummyjson.com/quotes/"+x;
+        String url = "https://dummyjson.com/quotes/random";
 
         JsonObjectRequest jsonObject = new JsonObjectRequest(url, new Response.Listener<JSONObject>() {
             @Override

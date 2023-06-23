@@ -1,6 +1,7 @@
 package com.example.appminiprojet02.Adapters;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -36,6 +37,11 @@ public class RvAdapter extends RecyclerView.Adapter<RvAdapter.ViewHolder> {
         holder.tv_quote_favourite.setText(quote.getQuote());
         holder.tv_author_favourite.setText(quote.getAuthor());
         holder.tv_id_favourite.setText("#"+quote.getId());
+        if (position%2 == 0){
+            holder.itemView.setBackgroundColor(Color.LTGRAY);
+        }else {
+            holder.itemView.setBackgroundColor(Color.WHITE);
+        }
     }
 
     @Override
